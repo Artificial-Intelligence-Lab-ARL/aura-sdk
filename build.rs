@@ -49,8 +49,14 @@ fn main() {
 
         let bindings = bindgen::Builder::default()
             .header("wrapper.h")
-            .clang_arg(format!("-I{}", qnn_base.join("include/Genie").to_string_lossy()))
-            .clang_arg(format!("-I{}", qnn_base.join("include/QNN").to_string_lossy()))
+            .clang_arg(format!(
+                "-I{}",
+                qnn_base.join("include/Genie").to_string_lossy()
+            ))
+            .clang_arg(format!(
+                "-I{}",
+                qnn_base.join("include/QNN").to_string_lossy()
+            ))
             .formatter(bindgen::Formatter::Rustfmt)
             .parse_callbacks(Box::new(bindgen::CargoCallbacks::new()))
             .generate()
