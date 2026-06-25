@@ -6,12 +6,20 @@ fn main() {
     let out_dir = env::var("OUT_DIR").unwrap();
     let bindings_file = PathBuf::from(out_dir).join("genie_bindings.rs");
 
-    if let Ok(qnn_base) = env::var("QNN_SDK_ROOT") {
+    let qnn_root = env::var("QNN_SDK_ROOT").ok().map(PathBuf::from);
+    let has_qnn = qnn_root
+        .as_ref()
+        .map(|p| p.exists() && p.join("include/Genie").exists())
+        .unwrap_or(false);
+
+    if has_qnn {
+        let qnn_base = qnn_root.unwrap();
         println!("cargo:rerun-if-changed=wrapper.h");
         println!("cargo:rerun-if-env-changed=QNN_SDK_ROOT");
 
-        let lib_dir = format!("{}/lib/aarch64-windows-msvc", qnn_base);
-        println!("cargo:rustc-link-search={}", lib_dir);
+        let lib_dir = qnn_base.join("lib/aarch64-windows-msvc");
+        let lib_dir_str = lib_dir.to_string_lossy();
+        println!("cargo:rustc-link-search={}", lib_dir_str);
         println!("cargo:rustc-link-lib=Genie");
 
         let target_dir = Path::new(&bindings_file)
@@ -32,7 +40,7 @@ fn main() {
             "QnnHtpPrepare.dll",
         ];
         for dll in &dlls {
-            let src = Path::new(&lib_dir).join(dll);
+            let src = lib_dir.join(dll);
             let dest = target_dir.join(dll);
             if src.exists() {
                 let _ = fs::copy(&src, &dest);
@@ -41,8 +49,8 @@ fn main() {
 
         let bindings = bindgen::Builder::default()
             .header("wrapper.h")
-            .clang_arg(format!("-I{}/include/Genie", qnn_base))
-            .clang_arg(format!("-I{}/include/QNN", qnn_base))
+            .clang_arg(format!("-I{}", qnn_base.join("include/Genie").to_string_lossy()))
+            .clang_arg(format!("-I{}", qnn_base.join("include/QNN").to_string_lossy()))
             .formatter(bindgen::Formatter::Rustfmt)
             .parse_callbacks(Box::new(bindgen::CargoCallbacks::new()))
             .generate()
