@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Bug Fixes
 
 - *(ci)* Align dummy binding handle mutability with QNN SDK types
+- *(ci)* Match GENIE_STATUS_SUCCESS type with QNN SDK signed bindings
+- *(ci)* Restrict test job matrix to Windows target
 
 ### Features
 
