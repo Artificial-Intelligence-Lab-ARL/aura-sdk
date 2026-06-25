@@ -67,8 +67,8 @@ fn main() {
             .expect("Couldn't write bindings!");
     } else {
         let dummy_bindings = r#"
-            pub type GenieDialogConfig_Handle_t = *mut std::os::raw::c_void;
-            pub type GenieDialog_Handle_t = *mut std::os::raw::c_void;
+            pub type GenieDialogConfig_Handle_t = *const std::os::raw::c_void;
+            pub type GenieDialog_Handle_t = *const std::os::raw::c_void;
             pub type GenieDialog_SentenceCode_t = std::os::raw::c_int;
             pub const GENIE_STATUS_SUCCESS: std::os::raw::c_int = 0;
             pub const GenieDialog_SentenceCode_t_GENIE_DIALOG_SENTENCE_COMPLETE: GenieDialog_SentenceCode_t = 0;
