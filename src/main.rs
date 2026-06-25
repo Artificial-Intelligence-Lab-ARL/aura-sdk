@@ -8,7 +8,33 @@ fn main() -> Result<()> {
     if args.ort {
         #[cfg(feature = "aura-engine")]
         {
-            return aura_sdk::engines::run_aura_engine(&args);
+            let model_path = args
+                .model
+                .as_ref()
+                .ok_or_else(|| anyhow::anyhow!("Model path required for ORT mode"))?;
+            let mut engine = aura_sdk::engines::AuraEngine::new(model_path, &args.soc_model)?;
+            println!("🚀 Aura SDK starting (ORT Mode)...");
+            println!("Prompt: {}\nResponse:", args.prompt);
+            let total_start = Instant::now();
+            let mut tokens = 0;
+            engine.query(&args.prompt, args.max_tokens, |token| {
+                print!("{}", token);
+                let _ = std::io::Write::flush(&mut std::io::stdout());
+                tokens += 1;
+            })?;
+            println!();
+            let total_duration = total_start.elapsed();
+            println!(
+                "\n--- Performance Metrics ---\nTotal tokens:    {}\nTotal time:      {:.2?}",
+                tokens, total_duration
+            );
+            if total_duration.as_secs_f64() > 0.0 {
+                println!(
+                    "TPS:             {:.2} tokens/s",
+                    tokens as f64 / total_duration.as_secs_f64()
+                );
+            }
+            return Ok(());
         }
         #[cfg(not(feature = "aura-engine"))]
         {
@@ -39,21 +65,20 @@ fn main() -> Result<()> {
     );
     println!("------------------------------------\n");
 
-    let engine = aura_sdk::engines::genie::GenieEngine::new(&args.config)?;
-    let stats = aura_sdk::common::Stats::new(args.max_tokens);
+    let engine = aura_sdk::engines::GenieEngine::new(&args.config)?;
 
     println!("\nPrompt: {}\nResponse:", args.prompt);
     let total_start = Instant::now();
 
-    engine.query(&args.prompt, &stats)?;
-
-    while !stats.is_done() {
-        std::thread::sleep(std::time::Duration::from_millis(10));
-    }
+    let mut tokens = 0;
+    engine.query_sync(&args.prompt, args.max_tokens, |token| {
+        print!("{}", token);
+        let _ = std::io::Write::flush(&mut std::io::stdout());
+        tokens += 1;
+    })?;
     println!();
 
     let total_duration = total_start.elapsed();
-    let tokens = stats.get_token_count();
     println!(
         "\n--- Performance Metrics ---\nTotal tokens:    {}\nTotal time:      {:.2?}",
         tokens, total_duration
