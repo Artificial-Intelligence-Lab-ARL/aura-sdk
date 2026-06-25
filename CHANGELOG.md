@@ -6,10 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [0.2.1] - 2026-06-25
 
+### Bug Fixes
+
+- *(ci)* Align dummy binding handle mutability with QNN SDK types
+
 ### Features
 
 - Add Phi-3.5 model support and CLI options
 - Introduce Aura SDK with ORT and Genie engines
+- Enhance README with project overview and architecture details
+
+### Refactor
+
+- Convert to library API, fix MSVC link, add examples & configure CI/CD
+- Convert to library API, fix MSVC link, configure CI/CD & fix CI build.rs fallback
+- Convert to library API, fix MSVC link, configure CI/CD & fix CI build.rs format
 
 ### Init
 
