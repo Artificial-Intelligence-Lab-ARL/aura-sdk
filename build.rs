@@ -70,7 +70,7 @@ fn main() {
             pub type GenieDialogConfig_Handle_t = *const std::os::raw::c_void;
             pub type GenieDialog_Handle_t = *const std::os::raw::c_void;
             pub type GenieDialog_SentenceCode_t = std::os::raw::c_int;
-            pub const GENIE_STATUS_SUCCESS: std::os::raw::c_int = 0;
+            pub const GENIE_STATUS_SUCCESS: u32 = 0;
             pub const GenieDialog_SentenceCode_t_GENIE_DIALOG_SENTENCE_COMPLETE: GenieDialog_SentenceCode_t = 0;
             pub const GenieDialog_SentenceCode_t_GENIE_DIALOG_SENTENCE_END: GenieDialog_SentenceCode_t = 1;
             pub const GenieDialog_SentenceCode_t_GENIE_DIALOG_SENTENCE_ABORT: GenieDialog_SentenceCode_t = 2;
